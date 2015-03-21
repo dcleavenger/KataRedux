@@ -1,23 +1,43 @@
 <?php
 
-define('DB_SERVER',   'localhost');
-define('DB_DATABASE', 'Kata');
-define('DB_USER',     'root');
-define('DB_PASSWORD', 'super_secret_pword');
+if(!defined('DB_SERVER'))
+  define('DB_SERVER',   'localhost');
 
-define('QUERY_All_Items', 'SELECT ItemID,Price,Offer FROM Item ORDER BY ItemID');
+if(!defined('DB_DATABASE'))
+  define('DB_DATABASE', 'Kata');
+
+if(!defined('DB_USER'))
+  define('DB_USER',     'root');
+
+if(!defined('DB_PASSWORD'))
+  define('DB_PASSWORD', 'super_secret_pword');
+
+if(!defined('QUERY_All_Items'))
+  define('QUERY_All_Items', 'SELECT ItemID,Price,Offer FROM Item ORDER BY ItemID');
+
+if(!defined('QUERY_Item'))
+define('QUERY_Item', 'SELECT ItemID,Price,Offer FROM Item WHERE ItemID = ? ORDER BY ItemID LIMIT 1');
 
 class ItemModel {
-  private $item_list;
   private $db;
   private $connected;
-  private $results;
   
   function __construct() {
     $item_list = array();
 
     $this->connected = false;
     $this->results = array();
+  }
+
+  function __destruct() {
+  }
+
+  public function get_item($id) {
+    $item = null;
+
+    // FIXME
+    // complete travesty that we have this code in more than one place.
+    // need to figure out how to use bind_param properly within a single database object.
 
     $this->db = new mysqli(DB_SERVER,DB_USER,DB_PASSWORD,DB_DATABASE);
 
@@ -26,49 +46,44 @@ class ItemModel {
     } else {
       $connected = true;
     }
-  }
 
-  function __destruct() {
+    if($connected) {
+      $statement = $this->db->stmt_init();
+
+      if($statement->prepare(QUERY_Item)) {
+        $statement->bind_param('s',$id);
+
+        $statement->execute();
+
+        $result = $statement->get_result();
+
+        while($row = $result->fetch_array(MYSQLI_ASSOC)) {
+          $item = $row;
+        }
+
+        $statement->close();
+      } else {
+        die("Could not prepare statement for refresh_item_list\n");
+      }
+    }
+
+    if(isset($item['Offer'])) {
+      if($item['Offer'] !== "") {
+        $offer = explode(' ',$item['Offer']);
+
+        $item['price_break'] = $offer[0];
+        $item['price_break_discount'] = $offer[2];
+      }
+    }
+
     if($connected) {
       $this->db->close();
       $connected = false;
+      $this->db = null;
     }
+
+    return $item;
   }
-
-  public function get_item_list() {
-    $this->refresh_item_list();
-
-    echo json_encode($item_list);
-  }
-
-  private function refresh_item_list() {
-    $statement = $this->db->stmt_init();
-
-    if($statement->prepare(QUERY_All_Items)) {
-      $statement->execute();
-
-      $result = $statement->get_result();
-
-      while($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $this->item_list[] = $row;
-      }
-
-      $statement->close();
-    } else {
-      die("Could not prepare statement for refresh_item_list\n");
-    }
-  }
-
-/*
-  public function get_item($id) {
-  }
-
-  public function add_item($id,$price,$offer) {
-  }
-
-  public function remove_item($id) {
-  }
-*/
 };
 
 ?>
