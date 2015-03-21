@@ -5,7 +5,7 @@
 
 "Why Linux", you might ask. The short answer: it was available and inexpensive. I use Debian/Ubuntu/Fedora/Gentoo Linux for all of my development at home, usually. Because of that, spinning up a VM clone and reconfiguring for LAMP was really easy to do. Additionally, the only thing I had to pay for was, well, literally nothing. I already had the image downloaded. I guess I had to pay for the internet access to download the disk image? Anyways, the less money, the better.
 
-Also, while I /could/ have used KSU resources to assemble this example, I didn't feel it was a professional move to do so. There I have access to SQL Server, VS, etc. but I would also have to make everyone who saw this example sign an NDA. Not very practical, especially since this is going into a public repository.
+Also, while I /could/ have used work resources to assemble this example, I didn't feel it was a professional move to do so. There I have access to SQL Server, VS, etc. but I would also have to make everyone who saw this example sign an NDA. Not very practical, especially since this is going into a public repository.
 
 When trying to figure out what language I wanted to use, I was thinking that mimicing the C# setup would be the ideal situation - using platforms such as: IIS, C#, AngularJS, nHibernate, etc. And then I got a chance to look at some of the code in the example and felt it would be a little like cheating because I would have the example to reference. That, and I also felt that I could use this as a learning opportunity of my own to see how AngularJS functions.
 
